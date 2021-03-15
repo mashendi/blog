@@ -18,25 +18,57 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($posts as $post)
+                @foreach ($posts as $i => $post)
                     <tr>
-                        <th scope="row">{{ $post['id'] }}</th>
-                        <td>{{ $post['title'] }}</td>
-                        <td>{{ $post['posted_by'] }}</td>
-                        <td>{{ $post['created_at'] }}</td>
+                        <th scope="row">{{ $i + 1 + ($posts->currentPage() - 1) * $posts->perPage() }}</th>
+                        <td>{{ $post->title }}</td>
+                        <td>{{ $post->user->name }}</td>
+                        <td>{{ $post->created_at->format('Y-m-d') }}</td>
                         <td scope="col">
                             <a href="{{ route('posts.show', ['post' => $post['id']]) }}" class="btn btn-info">View</a>
                             <a href="{{ route('posts.edit', ['post' => $post['id']]) }}" class="btn btn-primary">Edit</a>
-                            <form action="{{ route('posts.destroy', ['post' => $post['id']]) }}" method="POST" class="d-inline">
+                            <form action="{{ route('posts.destroy', ['post' => $post['id']]) }}" method="POST"
+                                class="d-inline" id="del-form">
                                 @csrf
                                 @method('DELETE')
-                                <input type="submit" value="Delete" class="btn btn-danger"></input>
+                                <button type="button" class="btn btn-danger" data-toggle="modal"
+                                    data-target="#postDelete">Delete</button>
                             </form>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+        {{ $posts->links() }}
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="postDelete" tabindex="-1" aria-labelledby="postDeleteLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="postDeleteLabel">Delete Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure? You want to delete?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="del-btn">Delete</button>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <script>
+        $(function() {
+            $("#del-btn").on('click', function(e) {
+                e.preventDefault();
+                $("#del-form").submit();
+            })
+        })
+
+    </script>
 @endsection

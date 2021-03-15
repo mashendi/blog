@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -13,13 +15,11 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = [
-                ['id' => 1, 'title' => 'Laravel', 'description' => 'This Is description', 'posted_by' => 'Ahmed', 'created_at' => '2021-03-13'],
-                ['id' => 2, 'title' => 'JS', 'description' => 'This Is description', 'posted_by' => 'Mohamed', 'created_at' => '2021-03-25'],
-            ];
+        // $posts = Post::all();
+        $posts = Post::latest()->simplePaginate(5);
 
         return view('posts.index', [
-                'posts' => $posts,
+                'posts' => $posts
             ]);
     }
 
@@ -30,7 +30,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        $users = User::all();
+        return view('posts.create', ['users' => $users]);
     }
 
     /**
@@ -41,7 +42,8 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        return redirect()->route('posts.index');
+        Post::create($request->all());
+        return redirect()->route("posts.index");
     }
 
     /**
@@ -52,7 +54,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $post = ['id' => 1, 'title' => 'Laravel', 'description' => 'This Is description', 'posted_by' => 'Ahmed', 'created_at' => '2021-03-13'];
+        $post = Post::find($id);
 
         return view('posts.show', ['post' => $post]);
     }
@@ -65,9 +67,10 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        $post = ['id' => 1, 'title' => 'Laravel', 'description' => 'This Is description', 'posted_by' => 'Ahmed', 'created_at' => '2021-03-13'];
+        $post = Post::find($id);
+        $users = User::all();
 
-        return view('posts.edit', ['post' => $post]);
+        return view('posts.edit', ['post' => $post, 'users' => $users]);
     }
 
     /**
@@ -77,9 +80,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $post->update($request->all());
         return redirect()->route('posts.index');
     }
 
@@ -89,8 +92,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
+        $post->delete();
         return redirect()->route('posts.index');
     }
 }

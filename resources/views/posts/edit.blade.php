@@ -1,20 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-    <form action="{{ route('posts.update', 'id', $post['id']) }} " method="POST">
+    <form action="{{ route('posts.update', ['post' => $post->id]) }} " method="POST">
         @method('PUT')
         @csrf
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" value="{{ $post['title'] }}">
+            <input type="text" class="form-control" id="title" value="{{ $post['title'] }}" name="title">
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
-            <textarea class="form-control">{{ $post['description'] }}</textarea>
+            <textarea class="form-control" name="description">{{ $post['description'] }}</textarea>
         </div>
         <div class="mb-3">
-            <label for="creator" class="form-label">Post Creator</label>
-            <input type="text" class="form-control" id="creator" value="{{ $post['posted_by'] }}">
+            <label for="user" class="form-label">Creator</label>
+            <select name="user_id" id="user" class="form-control">
+                @foreach ($users as $user)
+                    <option value="{{ $user->id }}" {{ $user->id == $post->user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                @endforeach
+            </select>
         </div>
 
         <button type="submit" class="btn btn-success">Save</button>
