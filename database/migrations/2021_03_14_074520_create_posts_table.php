@@ -16,9 +16,11 @@ class CreatePostsTable extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('slug');
             $table->text('description');
             $table->timestamps();
             $table->unsignedBigInteger("user_id");
+            $table->softDeletes();
         });
     }
 
@@ -29,6 +31,8 @@ class CreatePostsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::table('flights', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 }

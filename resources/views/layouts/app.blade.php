@@ -51,6 +51,10 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
+
+                        <li class="nav-item">
+                            <a href="{{ route('posts.index') }}" class="nav-link">All Posts</a>
+                        </li>
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
@@ -72,7 +76,7 @@
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                                 document.getElementById('logout-form').submit();">
+                                                                         document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
 

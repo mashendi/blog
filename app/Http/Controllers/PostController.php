@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostFormRequest;
 use App\Models\Post;
 use App\Models\User;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -19,8 +22,8 @@ class PostController extends Controller
         $posts = Post::latest()->simplePaginate(5);
 
         return view('posts.index', [
-                'posts' => $posts
-            ]);
+            'posts' => $posts
+        ]);
     }
 
     /**
@@ -37,11 +40,13 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PostFormRequest $request)
     {
+
+        $request->slug = SlugService::createSlug(Post::class, 'slug', $request->title);
         Post::create($request->all());
         return redirect()->route("posts.index");
     }
@@ -49,7 +54,7 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -62,7 +67,7 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -76,25 +81,33 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(PostFormRequest $request, Post $post)
     {
         $post->update($request->all());
+        $post->update(['slug' => Str::slug($request->title)]);
         return redirect()->route('posts.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $post
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post): \Illuminate\Http\RedirectResponse
     {
         $post->delete();
+        return redirect()->route('posts.index');
+    }
+
+    public function restore()
+    {
+        Post::onlyTrashed()->restore();
         return redirect()->route('posts.index');
     }
 }

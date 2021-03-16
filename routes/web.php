@@ -18,7 +18,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('posts', PostController::class);
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('posts/restore', [PostController::class, "restore"])->name('posts.restore');
+    Route::resource('posts', PostController::class);
+});
+
 
 Auth::routes();
 

@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form action="{{ route('posts.update', ['post' => $post->id]) }} " method="POST">
         @method('PUT')
         @csrf
@@ -16,7 +25,8 @@
             <label for="user" class="form-label">Creator</label>
             <select name="user_id" id="user" class="form-control">
                 @foreach ($users as $user)
-                    <option value="{{ $user->id }}" {{ $user->id == $post->user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                    <option value="{{ $user->id }}" {{ $user->id == $post->user->id ? 'selected' : '' }}>
+                        {{ $user->name }}</option>
                 @endforeach
             </select>
         </div>
