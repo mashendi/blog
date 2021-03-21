@@ -45,8 +45,8 @@ class PostController extends Controller
      */
     public function store(PostFormRequest $request)
     {
-
-        $request->slug = SlugService::createSlug(Post::class, 'slug', $request->title);
+        $request->only('title', 'description');
+//        $request->slug = SlugService::createSlug(Post::class, 'slug', $request->title);
         Post::create($request->all());
         return redirect()->route("posts.index");
     }

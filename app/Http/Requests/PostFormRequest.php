@@ -27,7 +27,7 @@ class PostFormRequest extends FormRequest
         return [
             'title' => ['required', 'min:3', Rule::unique('posts')->ignore($this->post)],
             'description' => ['required', 'min:10'],
-            'user_id' => ['exists:posts,user_id']
+            'user_id' => ['exists:users,id']
         ];
     }
 }
